@@ -1,16 +1,15 @@
 const express = require("express");
 const mqtt = require("mqtt");
 const router = express.Router();
-// const { getFirestore } = require("firebase-admin/firestore");
 var admin = require("firebase-admin");
 require("dotenv").config();
-var serviceAccount = require("./smartlock.json");
+var serviceAccount = require("./creds/smartlock.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-const lockstatus = require("../models/lockstatus");
+const devicesDB = require("../mongoDBmodels/devicesModel.js");
 
 const host = process.env.MQTT_IP;
 const port = process.env.MQTT_PORT;
@@ -20,6 +19,8 @@ const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
 const connectUrl = `mqtt://${host}:${port}`;
 const client = mqtt.connect(connectUrl, {
   clientId,
+  username: process.env.MQTT_USERNAME,
+  password: process.env.MQTT_PASSWORD,
 });
 
 const topic = "/lock/status";
@@ -34,7 +35,7 @@ client.on("message", (topic, payload) => {
   msg = JSON.parse(payload.toString());
   if (msg.hasOwnProperty("status")) {
     syncFirestore(msg["status"], msg["nodeId"], msg["status"]);
-    lockstatus
+    devicesDB
       .find({ deviceID: msg["nodeId"] })
       .updateOne({
         deviceState: msg["status"],
@@ -79,8 +80,8 @@ async function WrongID() {
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
-router.post("/createLockStatus", (req, res) => {
-  lockstatus
+router.post("/createdevicesDB", (req, res) => {
+  devicesDB
     .create({
       deviceID: req.body.deviceID,
       deviceState: req.body.deviceState,
@@ -100,8 +101,8 @@ router.post("/createLockStatus", (req, res) => {
     });
 });
 
-router.post("/updateLockStatus", (req, res) => {
-  lockstatus
+router.post("/updatedevicesDB", (req, res) => {
+  devicesDB
     .find({ deviceID: req.body.deviceID })
     .updateOne({
       deviceState: req.body.deviceState,
@@ -127,7 +128,7 @@ router.post("/updateLockStatus", (req, res) => {
 });
 
 router.get("/getNodeID", (req, res) => {
-  lockstatus
+  devicesDB
     .find({ deviceID: req.body.deviceID })
     .then((qual) => {
       console.log(`Found lock ID : ${req.body.deviceID}`);
@@ -140,7 +141,7 @@ router.get("/getNodeID", (req, res) => {
 });
 
 router.get("/DeleteNodeID", (req, res) => {
-  lockstatus
+  devicesDB
     .deleteOne({ deviceID: req.body.deviceID })
     .then((qual) => {
       console.log(`Found lock ID : ${req.body.deviceID}`);
@@ -153,7 +154,7 @@ router.get("/DeleteNodeID", (req, res) => {
 });
 
 router.get("/getAllNodeID", (req, res) => {
-  lockstatus
+  devicesDB
     .find({}, {})
     .then((data) => {
       console.log("Retrived All Documents");
@@ -168,7 +169,7 @@ router.get("/getAllNodeID", (req, res) => {
 });
 
 router.get("/getByNode/:nodeId", (req, res) => {
-  lockstatus
+  devicesDB
     .find({ deviceID: req.params.deviceID })
     .then((values) => {
       console.log(`lock ID found : ${req.body.deviceID}`);

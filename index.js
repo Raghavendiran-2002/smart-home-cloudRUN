@@ -6,7 +6,7 @@ require("dotenv").config();
 const app = express();
 console.log("Runing SmartLock");
 const mongoIP = process.env.MONGO_IP;
-const appPORT = process.env.APP_PORT;
+const mongoPORT = process.env.APP_PORT;
 mongoose
   .connect(`mongodb://${mongoIP}/`, {
     // .connect("mongodb://localhost:27017/", {
@@ -17,21 +17,18 @@ mongoose
   })
   .then(() => {
     console.log("Connected to Mongo DB");
-    app.listen(appPORT);
-    console.log("Server is listening at ", appPORT);
+    app.listen(mongoPORT);
+    console.log("Server is listening at ", mongoPORT);
   })
   .catch((err) => {
     console.log("Error Caught : ", err.message);
   });
 
-const lockstatus = require("./controller/lockstatus");
+const lockstatus = require("./apiController/homeDevicesApi");
 app.use("/lock", lockstatus);
 
-const user = require("./controller/user");
-app.use("/user", user);
-
-// const port = parseInt(appPORT) || 8080;
-const port = appPORT || 3001;
+const port = parseInt(process.env.PORT);
+// const port = 8081;
 app.listen(port, () => {
   console.log(`helloworld: listening on port ${port}`);
 });
