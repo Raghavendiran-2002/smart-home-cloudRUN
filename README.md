@@ -1,18 +1,20 @@
 # smart-home-cloudRUN
 
 Install gcloud CLI
-https://cloud.google.com/sdk/docs/install
+
+- https://cloud.google.com/sdk/docs/install
+- gcloud auth login
+- gcloud auth configure-docker
 
 .env file :
-MQTT_IP="ip"
-MQTT_PORT="port"
-MONGO_IP="ip"
-MQTT_USERNAME="username"
-MQTT_PASSWORD="password"
 
-Place the cred file :
-
-- apiController -> creds -> cred.json
+- MQTT_IP="ip"
+- MQTT_PORT="port"
+- MONGO_IP="ip"
+- MONGO_PORT="port"
+- MQTT_USERNAME="username"
+- MQTT_PASSWORD="password"
+- CRED="filenamePATH"
 
 Note:
 
@@ -21,20 +23,31 @@ Note:
 - modify package.json -> "scripts" ->
   "start":"node index.js",
 
-Clone the Repo
+Build Docker and push to Container Registry
 
-docker build --platform linux/amd64 -t smart-home .
-
-docker tag smart-home gcr.io/gccp-project-373305/smart-home
-
-docker push gcr.io/gccp-project-373305/smart-home
+- docker build --platform linux/amd64 -t smart-home .
+- docker tag smart-home gcr.io/gccp-project-373305/smart-home
+- docker push gcr.io/gccp-project-373305/smart-home
 
 POST
-http://localhost:3000/lock/postLockStatus
-body : {"nodeId" : "ragsdgsdf","status" : "pdsgd","motion" : "gfdg"}
+http://IP-ADDRESS:3000/lock/createdevicesDB
+body : {
+"deviceID": "0x01",
+"deviceState": false,
+"deviceName": "Lock",
+"deviceType": "lock"
+}
 
 GET
-http://localhost:3000/lock/getNodeID/
-body : {"nodeId" : "ragsdgsdfdsfs"}
+http://localhost:3001/lock/getAllNodeID
+
+POST
+http://localhost:3001/lock/updatedevicesDB
+body : {
+"deviceID": "0x01",
+"deviceState": false
+}
 
 GET
+http://13.235.244.236:3000/lock/DeleteNodeID
+body : {"deviceID": "0x00"}

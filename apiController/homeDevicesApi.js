@@ -3,7 +3,7 @@ const mqtt = require("mqtt");
 const router = express.Router();
 var admin = require("firebase-admin");
 require("dotenv").config();
-var serviceAccount = require("./creds/smartlock.json");
+var serviceAccount = require(`${process.env.CRED}`);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -13,7 +13,7 @@ const devicesDB = require("../mongoDBmodels/devicesModel.js");
 
 const host = process.env.MQTT_IP;
 const port = process.env.MQTT_PORT;
-var isUpdate = true;
+
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
 
 const connectUrl = `mqtt://${host}:${port}`;

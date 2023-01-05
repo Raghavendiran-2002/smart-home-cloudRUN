@@ -6,9 +6,9 @@ require("dotenv").config();
 const app = express();
 console.log("Runing SmartLock");
 const mongoIP = process.env.MONGO_IP;
-const mongoPORT = process.env.APP_PORT;
+const mongoPORT = process.env.MONGO_PORT;
 mongoose
-  .connect(`mongodb://${mongoIP}/`, {
+  .connect(`mongodb://${mongoIP}:${mongoPORT}/`, {
     // .connect("mongodb://localhost:27017/", {
     // .connect("mongodb://localhost:27017/", {
 
