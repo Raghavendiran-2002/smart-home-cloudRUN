@@ -24,6 +24,9 @@ mongoose
 const smarthome = require("./apiController/homeDevicesApi");
 app.use("/smartdevices", smarthome);
 
+app.get("/", function (req, res) {
+  res.send("Welcome Home");
+});
 const port = parseInt(process.env.PORT);
 // const port = 8081;
 app.listen(port, () => {
