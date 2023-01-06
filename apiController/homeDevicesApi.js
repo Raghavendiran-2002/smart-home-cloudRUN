@@ -48,11 +48,7 @@ client.on("message", (topic, payload) => {
         return;
       });
   }
-  if (msg.hasOwnProperty("wrong")) {
-    if (msg["wrong"] == true) {
-      WrongID();
-    }
-  }
+
   if (msg["status"] == true) {
     console.log(`Device ${msg["nodeId"]} is Open`);
   } else if (msg["status"] == false) {
@@ -62,20 +58,22 @@ client.on("message", (topic, payload) => {
 
 async function syncFirestore(state, nodeID, isUpdate) {
   db = getFirestore();
-  const smartlockdb = db.collection("lockRealTime").doc("0AlIjID2eJovhzl3SDRl");
+  const smartlockdb = db
+    .collection("devicesRealTime")
+    .doc("EcpcZdmxoR6sqQThRacr");
   await smartlockdb.update({
     isRandom: Math.random(),
   });
 }
 
-async function WrongID() {
-  db = getFirestore();
-  const smartlockdb = db.collection("wrongID").doc("6tsfk3UyPScZ6DX7Qhdg");
-  await smartlockdb.update({
-    wrong: Math.random(),
-  });
-  // sendMain();
-}
+// async function WrongID() {
+//   db = getFirestore();
+//   const smartlockdb = db.collection("wrongID").doc("6tsfk3UyPScZ6DX7Qhdg");
+//   await smartlockdb.update({
+//     wrong: Math.random(),
+//   });
+//   // sendMain();
+// }
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
