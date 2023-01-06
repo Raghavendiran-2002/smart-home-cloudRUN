@@ -30,7 +30,7 @@ Build Docker and push to Container Registry
 - docker push gcr.io/gccp-project-373305/smart-home
 
 POST
-http://IP-ADDRESS:3000/smartdevices/createdevice
+http://IP-ADDRESS/smartdevices/createdevice
 body : {
 "deviceID": "0x01",
 "deviceState": false,
@@ -39,20 +39,31 @@ body : {
 }
 
 GET
-http://localhost:3001/smartdevices/getDeviceID
+http://IP-ADDRESS/smartdevices/getDeviceID
 
 POST
-http://localhost:3001/smartdevices/updatedevice
+http://IP-ADDRESS/smartdevices/updatedevice
 body : {
 "deviceID": "0x01",
 "deviceState": false
 }
 
 GET
-http://13.235.244.236:3000/smartdevices/deleteDeviceID
+http://IP-ADDRESS/smartdevices/deleteDeviceID
 body : {"deviceID": "0x00"}
 
 GET
-http://IP-ADDRESS:3000/smartdevices/getAllDeviceID
+http://IP-ADDRESS:PORT/smartdevices/getAllDeviceID
 
-Also setup
+Install Arduino IDE:
+https://support.arduino.cc/hc/en-us/articles/360019833020-Download-and-install-Arduino-IDE
+
+Install Arduino Library:
+
+- PubSubClient.h
+- WiFi.h
+- ArduinoJson.h
+
+Upload homeAutomation.ino located in ArduinoIDE folder to ESP32 microcontroller
+
+Flutter APP : https://github.com/Raghavendiran-2002/smart-home-app
