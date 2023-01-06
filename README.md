@@ -30,7 +30,7 @@ Build Docker and push to Container Registry
 - docker push gcr.io/gccp-project-373305/smart-home
 
 POST
-http://IP-ADDRESS:3000/lock/createdevicesDB
+http://IP-ADDRESS:3000/smartdevices/createdevice
 body : {
 "deviceID": "0x01",
 "deviceState": false,
@@ -39,15 +39,20 @@ body : {
 }
 
 GET
-http://localhost:3001/lock/getAllNodeID
+http://localhost:3001/smartdevices/getDeviceID
 
 POST
-http://localhost:3001/lock/updatedevicesDB
+http://localhost:3001/smartdevices/updatedevice
 body : {
 "deviceID": "0x01",
 "deviceState": false
 }
 
 GET
-http://13.235.244.236:3000/lock/DeleteNodeID
+http://13.235.244.236:3000/smartdevices/deleteDeviceID
 body : {"deviceID": "0x00"}
+
+GET
+http://IP-ADDRESS:3000/smartdevices/getAllDeviceID
+
+Also setup

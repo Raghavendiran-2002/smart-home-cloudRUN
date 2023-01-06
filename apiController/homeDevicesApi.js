@@ -23,7 +23,7 @@ const client = mqtt.connect(connectUrl, {
   password: process.env.MQTT_PASSWORD,
 });
 
-const topic = "/lock/status";
+const topic = "/device/status";
 client.on("connect", () => {
   console.log("Connected");
   client.subscribe([topic], () => {
@@ -54,9 +54,9 @@ client.on("message", (topic, payload) => {
     }
   }
   if (msg["status"] == true) {
-    console.log(`Lock ${msg["nodeId"]} is Open`);
+    console.log(`Device ${msg["nodeId"]} is Open`);
   } else if (msg["status"] == false) {
-    console.log(`Lock ${msg["nodeId"]}  is Close`);
+    console.log(`Device ${msg["nodeId"]}  is Close`);
   }
 });
 
@@ -80,7 +80,7 @@ async function WrongID() {
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
-router.post("/createdevicesDB", (req, res) => {
+router.post("/createdevice", (req, res) => {
   devicesDB
     .create({
       deviceID: req.body.deviceID,
@@ -89,7 +89,7 @@ router.post("/createdevicesDB", (req, res) => {
       deviceType: req.body.deviceType,
     })
     .then((status) => {
-      console.log(`lock status... ID : ${req.body}`);
+      console.log(`Device status... ID : ${req.body}`);
       return res.status(201).json({
         success: true,
         message: "Data Added Successfully",
@@ -101,20 +101,20 @@ router.post("/createdevicesDB", (req, res) => {
     });
 });
 
-router.post("/updatedevicesDB", (req, res) => {
+router.post("/updatedevice", (req, res) => {
   devicesDB
     .find({ deviceID: req.body.deviceID })
     .updateOne({
       deviceState: req.body.deviceState,
     })
     .then((status) => {
-      console.log(`Updated Lock status: ${req.body.deviceState}`);
+      console.log(`Updated Device status: ${req.body.deviceState}`);
       msg = JSON.stringify({
         deviceID: req.body.deviceID,
         deviceState: req.body.deviceState,
       });
 
-      client.publish("/lock/publishStatus", msg);
+      client.publish("/smarthome/publishStatus", msg);
 
       return res.status(201).json({
         success: true,
@@ -127,33 +127,33 @@ router.post("/updatedevicesDB", (req, res) => {
     });
 });
 
-router.get("/getNodeID", (req, res) => {
+router.get("/getDeviceID", (req, res) => {
   devicesDB
     .find({ deviceID: req.body.deviceID })
     .then((qual) => {
-      console.log(`Found lock ID : ${req.body.deviceID}`);
+      console.log(`Found Device ID : ${req.body.deviceID}`);
       return res.status(200).json({ success: true, quality: qual });
     })
     .catch((err) => {
-      console.log(`no such lock ID found : ${req.body.deviceID}`);
+      console.log(`no such Device ID found : ${req.body.deviceID}`);
       return res.status(500).json({ success: false, message: err.message });
     });
 });
 
-router.get("/DeleteNodeID", (req, res) => {
+router.get("/deleteDeviceID", (req, res) => {
   devicesDB
     .deleteOne({ deviceID: req.body.deviceID })
     .then((qual) => {
-      console.log(`Found lock ID : ${req.body.deviceID}`);
+      console.log(`Found Device ID : ${req.body.deviceID}`);
       return res.status(200).json({ success: true, quality: qual });
     })
     .catch((err) => {
-      console.log(`no such lock ID found : ${req.body.deviceID}`);
+      console.log(`no such Device ID found : ${req.body.deviceID}`);
       return res.status(500).json({ success: false, message: err.message });
     });
 });
 
-router.get("/getAllNodeID", (req, res) => {
+router.get("/getAllDeviceID", (req, res) => {
   devicesDB
     .find({}, {})
     .then((data) => {
@@ -168,15 +168,15 @@ router.get("/getAllNodeID", (req, res) => {
     });
 });
 
-router.get("/getByNode/:nodeId", (req, res) => {
+router.get("/getByDeviceID/:DeviceId", (req, res) => {
   devicesDB
     .find({ deviceID: req.params.deviceID })
     .then((values) => {
-      console.log(`lock ID found : ${req.body.deviceID}`);
+      console.log(`Device ID found : ${req.body.deviceID}`);
       return res.status(200).json({ success: true, values: values });
     })
     .catch((err) => {
-      console.log(`no such lock ID found : ${req.body.deviceID}`);
+      console.log(`no such Device ID found : ${req.body.deviceID}`);
       return res.status(500).json({ success: false, message: err.message });
     });
 });

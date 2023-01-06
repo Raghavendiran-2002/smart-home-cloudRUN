@@ -9,9 +9,6 @@ const mongoIP = process.env.MONGO_IP;
 const mongoPORT = process.env.MONGO_PORT;
 mongoose
   .connect(`mongodb://${mongoIP}:${mongoPORT}/`, {
-    // .connect("mongodb://localhost:27017/", {
-    // .connect("mongodb://localhost:27017/", {
-
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -24,8 +21,8 @@ mongoose
     console.log("Error Caught : ", err.message);
   });
 
-const lockstatus = require("./apiController/homeDevicesApi");
-app.use("/lock", lockstatus);
+const smarthome = require("./apiController/homeDevicesApi");
+app.use("/smartdevices", smarthome);
 
 const port = parseInt(process.env.PORT);
 // const port = 8081;
