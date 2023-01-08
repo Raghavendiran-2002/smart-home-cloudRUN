@@ -95,3 +95,111 @@ const char *mqtt_password = "password";
 ```
 
 Flutter APP : https://github.com/Raghavendiran-2002/smart-home-app
+
+## Setup Personal Cloud
+
+##### Install Apache
+
+```
+sudo apt update
+sudo apt install apache2
+sudo systemctl stop apache2.service
+sudo systemctl start apache2.service
+sudo systemctl enable apache2.service
+sudo apt install mariadb-server
+sudo apt install mariadb-client
+sudo systemctl stop mariadb.service
+sudo systemctl start mariadb.service
+sudo systemctl enable mariadb.service
+sudo mysql_secure_installation
+```
+
+Use the guide below to answer:
+
+```
+If you've just installed MariaDB, and haven't set the root password yet, you should just press enter here.
+Enter current password for root (enter for none): PRESS ENTER
+Switch to unix_socket authentication [Y/n] n
+Change the root password? [Y/n] n
+Remove anonymous users? [Y/n] y
+Disallow root login remotely? [Y/n] y
+Remove test database and access to it? [Y/n] y
+Reload privilege tables now? [Y/n] y
+All done!
+```
+
+##### Install PHP on Ubuntu
+
+```
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:ondrej/php
+sudo apt update
+sudo apt install php7.4 libapache2-mod-php7.4 php7.4-imagick php7.4-common php7.4-mysql php7.4-gmp php7.4-imap php7.4-json php7.4-pgsql php7.4-ssh2 php7.4-sqlite3 php7.4-ldap php7.4-curl php7.4-intl php7.4-mbstring php7.4-xmlrpc php7.4-gd php7.4-xml php7.4-cli php7.4-zip
+sudo nano /etc/php/7.4/apache2/php.ini
+# make changes to the file
+file_uploads = On
+allow_url_fopen = On
+short_open_tag = On
+memory_limit = 256M
+upload_max_filesize = 100M
+max_execution_time = 360
+date.timezone = America/Chicago
+```
+
+##### Create a Nextcloud database
+
+```
+sudo mysql -u root -p
+CREATE DATABASE nextcloud;
+CREATE USER '<username>'@'localhost' IDENTIFIED BY '<password>';
+GRANT ALL ON nextcloud.* TO '<username>'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+##### Download Nextcloud
+
+```
+wget https://download.nextcloud.com/server/releases/nextcloud-22.2.0.zip -P /tmp
+sudo unzip /tmp/nextcloud-22.2.0.zip -d /var/www
+sudo chown -R www-data:www-data /var/www/nextcloud/
+sudo chmod -R 755 /var/www/nextcloud/
+```
+
+##### Configure Apache for Nextcloud
+
+```sudo nano /etc/apache2/sites-available/nextcloud.conf
+
+```
+
+copy and paste the content below into the file and save
+
+```
+Alias /nextcloud "/var/www/nextcloud/"
+
+<Directory /var/www/nextcloud/>
+  Options +FollowSymlinks
+  AllowOverride All
+
+ <IfModule mod_dav.c>
+  Dav off
+ </IfModule>
+
+ SetEnv HOME /var/www/nextcloud
+ SetEnv HTTP_HOME /var/www/nextcloud
+
+</Directory>
+```
+
+```
+sudo a2ensite nextcloud.conf
+sudo a2enmod rewrite
+sudo a2enmod headers
+sudo a2enmod env
+sudo a2enmod dir
+sudo a2enmod mime
+sudo systemctl reload apache2
+
+```
+
+Open brower http://localhost/nextcloud
