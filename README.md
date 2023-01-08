@@ -2,6 +2,10 @@
 
 In this project Cloud Run to run an API that connects to a MongoDB database and an MQTT server. This API serves as the main interface for interacting with our smart home system.
 
+## Google Cloud Workflow
+
+![alt text](https://firebasestorage.googleapis.com/v0/b/gccp-project-373305.appspot.com/o/GCCP%20workflow.png?alt=media&token=21e00844-1c8a-43fd-8636-4154ba55fb92)
+
 ## Getting Started
 
 Install gcloud CLI
@@ -73,7 +77,7 @@ http://IP-ADDRESS:PORT/smartdevices/getAllDeviceID
 Install Arduino IDE:
 https://support.arduino.cc/hc/en-us/articles/360019833020-Download-and-install-Arduino-IDE
 
-# IoT Device Setup
+## IoT Device Setup
 
 Install Arduino Library:
 
@@ -96,7 +100,7 @@ const char *mqtt_password = "password";
 
 Flutter APP : https://github.com/Raghavendiran-2002/smart-home-app
 
-## Setup Personal Cloud
+# Setup Personal Cloud
 
 ##### Install Apache
 
@@ -168,8 +172,8 @@ sudo chmod -R 755 /var/www/nextcloud/
 
 ##### Configure Apache for Nextcloud
 
-```sudo nano /etc/apache2/sites-available/nextcloud.conf
-
+```
+sudo nano /etc/apache2/sites-available/nextcloud.conf
 ```
 
 copy and paste the content below into the file and save
