@@ -107,6 +107,7 @@ Flutter APP : https://github.com/Raghavendiran-2002/smart-home-app
 ```
 sudo apt update
 sudo apt install apache2
+sudo apt install apache2* -y
 sudo systemctl stop apache2.service
 sudo systemctl start apache2.service
 sudo systemctl enable apache2.service
@@ -168,31 +169,70 @@ wget https://download.nextcloud.com/server/releases/nextcloud-22.2.0.zip -P /tmp
 sudo unzip /tmp/nextcloud-22.2.0.zip -d /var/www
 sudo chown -R www-data:www-data /var/www/nextcloud/
 sudo chmod -R 755 /var/www/nextcloud/
+sudo cp /var/www/nextcloud/* /var/www/html/
 ```
 
 ##### Configure Apache for Nextcloud
 
 ```
-sudo nano /etc/apache2/sites-available/nextcloud.conf
+sudo nano /etc/apache2/sites-available/ssl.conf
 ```
 
-copy and paste the content below into the file and save
+Create both files below with SSL Certificate
+
+```
+sudo nano /home/ubuntu/nextcloud.com.crt
+sudo nano /home/ubuntu/nextcloud.com.crt
+```
+
+Copy and paste the content below into the file and save
 
 ```
 Alias /nextcloud "/var/www/nextcloud/"
 
-<Directory /var/www/nextcloud/>
-  Options +FollowSymlinks
-  AllowOverride All
+<VirtualHost *:80>
+    ServerAdmin <mail-ID>.com
+    ServerName nextcloud.ztechonoid.com # https://nextcloud.ztechonoid.com/index.php
+    Redirect / https://nextcloud.ztechonoid.com/
+    DocumentRoot /var/www/nextcloud/
+</VirtualHost>
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerAdmin <mail-ID>.com
+    ServerName nextcloud.ztechonoid.com https://nextcloud.ztechonoid.com/index.php
+    # Logging
+    DocumentRoot /var/www/nextcloud/
+    ErrorLog /var/www/tomcat-error.log
+    LogLevel info
+    CustomLog /var/www/tomcat-access.log combined
+####  SSL Configuration
+    SSLEngine on
+    SSLProxyEngine on
+        # Place both Certificate on this location
+        SSLCertificateKeyFile   /home/ubuntu/nextcloud.com.key
+        SSLCertificateFile      /home/ubuntu/nextcloud.com.crt
+    BrowserMatch "MSIE [2-6]" \
+        nokeepalive ssl-unclean-shutdown \
+        downgrade-1.0 force-response-1.0
+    # MSIE 7 and newer should be able to use keepalive
+    BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+#### End SSL Configuration
+    # Proxy Settings
+        ProxyPass         /  http://localhost:80/ nocanon
+        ProxyPassReverse  /  http://localhost:80/
+        ProxyRequests     Off
+        AllowEncodedSlashes NoDecode
 
- <IfModule mod_dav.c>
-  Dav off
- </IfModule>
-
- SetEnv HOME /var/www/nextcloud
- SetEnv HTTP_HOME /var/www/nextcloud
-
-</Directory>
+    <Proxy *>
+        Order Deny,Allow
+        Allow from all
+    </Proxy>
+    <Location />
+         Order allow,deny
+         Allow from all
+    </Location>
+</VirtualHost>
+</IfModule>
 ```
 
 ```
@@ -203,7 +243,7 @@ sudo a2enmod env
 sudo a2enmod dir
 sudo a2enmod mime
 sudo systemctl reload apache2
-
+sudo systemctl restart apache2
 ```
 
 Open brower http://localhost/nextcloud
